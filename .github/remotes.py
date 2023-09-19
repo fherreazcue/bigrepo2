@@ -47,14 +47,17 @@ for R in remotes:
             subprocess.run(["git","remote","set-url","--push",R.remote_name,"no-pushing"])
     
     if not args.no_sync:
-        print(f"    Fetching {R.remote_name}")
-        subprocess.run(["git","fetch",R.remote_name])
+        if args.no_config and not R.remote_name in existing:
+            print(f"    Remote {R.remote_name} is not configured, skipping sync...")
+        else:
+            print(f"    Fetching {R.remote_name}")
+            subprocess.run(["git","fetch",R.remote_name])
 
-        print(f"    Pulling content from {R.remote_name}/main: {R.dirs_to_sync}")
-        subprocess.run(f"git checkout {R.remote_name}/main -- {R.dirs_to_sync}",shell=True)
+            print(f"    Pulling content from {R.remote_name}/main: {R.dirs_to_sync}")
+            subprocess.run(f"git checkout {R.remote_name}/main -- {R.dirs_to_sync}",shell=True)
 
-        if R.run_after_sync and not args.no_after:
-            print(f"    Running after-sync command: {R.run_after_sync}")
-            subprocess.run(f"{R.run_after_sync}",shell=True)
+            if R.run_after_sync and not args.no_after:
+                print(f"    Running after-sync command: {R.run_after_sync}")
+                subprocess.run(f"{R.run_after_sync}",shell=True)
 
 print("")
