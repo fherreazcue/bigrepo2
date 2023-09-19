@@ -35,25 +35,26 @@ remotes = [
 existing=subprocess.run(["git","remote","show"],capture_output=True,text=True).stdout.splitlines()
 
 for R in remotes:
+    print("")
     if not args.no_config:
         if R.remote_name in existing:
-            print(f"\n   Remote {R.remote_name} already exists, skipping config...")
+            print(f"    Remote {R.remote_name} already exists, skipping config...")
         else:
-            print(f"\n   Adding remote {R.remote_url} as {R.remote_name}")
+            print(f"    Adding remote {R.remote_url} as {R.remote_name}")
             subprocess.run(["git","remote","add",R.remote_name,R.remote_url])
 
-            print(f"   Configuring as no-push")
+            print(f"    Configuring as no-push")
             subprocess.run(["git","remote","set-url","--push",R.remote_name,"no-pushing"])
     
     if not args.no_sync:
-        print(f"   Fetching {R.remote_name}")
+        print(f"    Fetching {R.remote_name}")
         subprocess.run(["git","fetch",R.remote_name])
 
-        print(f"   Pulling content from {R.remote_name}/main: {R.dirs_to_sync}")
+        print(f"    Pulling content from {R.remote_name}/main: {R.dirs_to_sync}")
         subprocess.run(f"git checkout {R.remote_name}/main -- {R.dirs_to_sync}",shell=True)
 
         if R.run_after_sync and not args.no_after:
-            print(f"   Running after-sync command: {R.run_after_sync}")
+            print(f"    Running after-sync command: {R.run_after_sync}")
             subprocess.run(f"{R.run_after_sync}",shell=True)
 
-print("\n")
+print("")
